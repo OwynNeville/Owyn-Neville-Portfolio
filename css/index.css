@@ -26,7 +26,7 @@ body{
 }
 #jslogo{
     position: absolute;
-    left:50%;
+    left:57%;
     top: 4%;
 }
 #htmllogo{
@@ -123,7 +123,7 @@ body{
     display: flex;
 }
 #me_desc{
-    width: 40vw;
+    width: 50vw;
     position: absolute;
     top: 10%;
     left: 10%;
@@ -257,7 +257,7 @@ body{
 
 .portfolio{
     position: relative;
-    box-shadow: -1px 1px 5px 9px rgba(255,255,255,0.70);
+
     margin: 5vh;
     margin-top: 8vh;
     width: 13vw;
@@ -276,14 +276,15 @@ body{
     margin-top: 0%;
     position: relative;
     outline: 1px solid white;
-    width: 13vw;
+    width: 18vw;
     height: 25vh;
-
+    box-shadow: -1px 5px 10px 9px rgba(255,255,255,0.80);
 }
 .primg1{
     position: relative;
     height:45%;
-    width: 100%;
+    width: 18vw;
+    box-shadow: -1px 2px 10px 10px rgba(255,255,255,0.80);
 }
 .pro_h{
     text-align: center;
