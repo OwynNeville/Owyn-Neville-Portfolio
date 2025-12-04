@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47d5a210-42a1-442c-9a90-c6f3aa57637a" name="Changes" comment="-fixed todo image">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/files/owyn_neville_resume.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/files/owyn_neville_resume.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="47d5a210-42a1-442c-9a90-c6f3aa57637a" name="Changes" comment="-new resume&#10;-redid text and sizing&#10;-misc" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +112,7 @@
       <workItem from="1759860295211" duration="16000" />
       <workItem from="1763002950628" duration="35000" />
       <workItem from="1764566626520" duration="645000" />
-      <workItem from="1764601580902" duration="602000" />
+      <workItem from="1764601580902" duration="1087000" />
     </task>
     <task id="LOCAL-00001" summary="adding to repository">
       <option name="closed" value="true" />
@@ -335,7 +330,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759293682718</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="-new resume&#10;-redid text and sizing&#10;-misc">
+      <option name="closed" value="true" />
+      <created>1764602359996</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1764602359996</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,6 +369,7 @@
     <MESSAGE value="-sizing" />
     <MESSAGE value="-replaced discord bot project&#10;-new project descriptions&#10;-Todo list added" />
     <MESSAGE value="-fixed todo image" />
-    <option name="LAST_COMMIT_MESSAGE" value="-fixed todo image" />
+    <MESSAGE value="-new resume&#10;-redid text and sizing&#10;-misc" />
+    <option name="LAST_COMMIT_MESSAGE" value="-new resume&#10;-redid text and sizing&#10;-misc" />
   </component>
 </project>
