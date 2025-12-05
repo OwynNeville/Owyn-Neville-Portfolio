@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="47d5a210-42a1-442c-9a90-c6f3aa57637a" name="Changes" comment="-new resume&#10;-redid text and sizing&#10;-misc">
-      <change afterPath="$PROJECT_DIR$/multiplechoice.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="47d5a210-42a1-442c-9a90-c6f3aa57637a" name="Changes" comment="-new resume&#10;-redid text and sizing&#10;-misc" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -120,7 +117,7 @@
       <workItem from="1764601580902" duration="1087000" />
       <workItem from="1764869230336" duration="613000" />
       <workItem from="1764965067403" duration="494000" />
-      <workItem from="1764965572105" duration="615000" />
+      <workItem from="1764965572105" duration="975000" />
     </task>
     <task id="LOCAL-00001" summary="adding to repository">
       <option name="closed" value="true" />
@@ -354,7 +351,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764869241448</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="-new resume&#10;-redid text and sizing&#10;-misc">
+      <option name="closed" value="true" />
+      <created>1764966889652</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1764966889652</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
