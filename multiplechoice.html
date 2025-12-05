@@ -91,7 +91,17 @@
     <div id="uploadSection" class="animate-fade-in">
         <div class="text-center mb-10">
             <h2 class="text-3xl font-bold text-slate-800 mb-4">Upload your Study Materials</h2>
-            <p class="text-slate-600 max-w-2xl mx-auto">Select a folder containing PDFs. We'll scan them, extract the text locally, and generate a custom quiz for you.</p>
+            <p class="text-slate-600 max-w-2xl mx-auto mb-8">Select a folder containing PDFs. We'll scan them, extract the text locally, and generate a custom quiz for you.</p>
+
+            <!-- Difficulty Selector -->
+            <div class="max-w-md mx-auto mb-8">
+                <label class="block text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Select Difficulty</label>
+                <div class="flex bg-slate-200 p-1.5 rounded-xl">
+                    <button onclick="setDifficulty('easy')" id="btnEasy" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all">Easy</button>
+                    <button onclick="setDifficulty('medium')" id="btnMedium" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white shadow-sm text-blue-600 transition-all">Medium</button>
+                    <button onclick="setDifficulty('hard')" id="btnHard" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all">Hard</button>
+                </div>
+            </div>
         </div>
 
 
@@ -161,6 +171,11 @@
                             <span class="text-xs text-red-700 font-medium">Wrong</span>
                         </div>
                     </div>
+                </div>
+
+                <div class="glass-panel p-4 rounded-xl flex items-center justify-between text-sm text-slate-500">
+                    <span>Difficulty:</span>
+                    <span id="displayDifficulty" class="font-semibold text-blue-600 uppercase">Medium</span>
                 </div>
 
 
@@ -242,6 +257,7 @@
     let currentQuestionIndex = 0;
     let score = { correct: 0, wrong: 0 };
     let extractedTextGlobal = "";
+    let difficultyLevel = 'medium';
 
 
     // --- DOM Elements ---
@@ -269,7 +285,8 @@
         scoreCorrect: document.getElementById('scoreCorrect'),
         scoreWrong: document.getElementById('scoreWrong'),
         resultsView: document.getElementById('resultsView'),
-        finalScore: document.getElementById('finalScore')
+        finalScore: document.getElementById('finalScore'),
+        displayDifficulty: document.getElementById('displayDifficulty')
     };
 
 
@@ -302,6 +319,28 @@
     });
 
 
+    // --- Difficulty Logic ---
+    function setDifficulty(level) {
+        difficultyLevel = level;
+
+        // Update UI buttons
+        const buttons = ['Easy', 'Medium', 'Hard'];
+        buttons.forEach(btn => {
+            const el = document.getElementById(`btn${btn}`);
+            const isSelected = btn.toLowerCase() === level;
+
+            if (isSelected) {
+                el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white shadow-sm text-blue-600 transition-all transform scale-105';
+            } else {
+                el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all';
+            }
+        });
+
+
+        els.displayDifficulty.textContent = level;
+    }
+
+
     // --- File Handling & PDF Parsing ---
     folderInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
@@ -330,16 +369,20 @@
             }
 
 
-            // Truncate if MASSIVE (Gemini 1.5 Flash has ~1M token context, roughly 4MB text. We'll cap at 3MB to be safe)
-            // 1 char ~ 1 byte.
-            const MAX_CHARS = 3000000;
+            // Truncate if MASSIVE
+            const MAX_CHARS = 1000000;
             if (extractedTextGlobal.length > MAX_CHARS) {
                 console.warn("Text content too large, truncating...");
                 extractedTextGlobal = extractedTextGlobal.substring(0, MAX_CHARS);
             }
 
 
-            updateStatus("Generating Questions...", "Consulting Gemini AI...", 75);
+            // --- FIX: Actually save the session now that we have the text ---
+            await saveSession(extractedTextGlobal, processedCount, files.map(f => f.name));
+            // ---------------------------------------------------------------
+
+
+            updateStatus("Generating Questions...", `Consulting Gemini AI (${difficultyLevel} mode)...`, 75);
             await generateQuestions(extractedTextGlobal);
 
 
@@ -374,8 +417,20 @@
 
     // --- Gemini AI Interaction ---
     async function generateQuestions(contextText) {
+        let difficultyPrompt = "";
+        if (difficultyLevel === 'easy') {
+            difficultyPrompt = "DIFFICULTY: EASY. Focus on simple recall, definitions, and basic facts found directly in the text. Questions should be straightforward.";
+        } else if (difficultyLevel === 'medium') {
+            difficultyPrompt = "DIFFICULTY: MEDIUM. Focus on application of concepts and comparing ideas. Questions should require understanding context, not just keyword matching.";
+        } else {
+            difficultyPrompt = "DIFFICULTY: HARD. Focus on complex analysis, synthesis, and multi-step reasoning. Questions should challenge the user to connect different parts of the text and infer conclusions.";
+        }
+
+
         const prompt = `
             You are an expert educator. Based strictly on the provided text, generate 10 high-quality multiple-choice questions.
+
+            ${difficultyPrompt}
 
             Format the output strictly as a JSON array of objects. Do not wrap in markdown code blocks.
 
@@ -449,7 +504,7 @@
 
 
         try {
-            updateStatus("Generating Questions...", "Consulting Gemini AI...", 75);
+            updateStatus("Generating Questions...", `Consulting Gemini AI (${difficultyLevel})...`, 75);
             const data = await makeRequest();
 
             if (!data.candidates || !data.candidates[0].content) {
@@ -610,3 +665,4 @@
 </script>
 </body>
 </html>
+
