@@ -56,7 +56,7 @@
                 <p class="text-xs text-slate-500">Turn folders of PDFs into Quizzes</p>
             </div>
         </div>
-        <button id="settingsBtn" class="p-2 text-slate-500 hover:text-blue-600 transition-colors">
+        <button id="settingsBtn" class="p-2 text-slate-500 hover:text-blue-600 transition-colors relative">
             <i class="ph ph-gear text-2xl"></i>
         </button>
     </div>
@@ -66,22 +66,36 @@
 <!-- Main Content -->
 <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8">
 
-    <!-- API Key Modal (Hidden by default logic handled in JS) -->
+    <!-- API Key Modal & Settings -->
     <div id="apiKeyModal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-fade-in">
-            <h2 class="text-2xl font-bold mb-2">Setup API Key</h2>
-            <p class="text-slate-600 mb-6 text-sm">To generate questions, we need a Google Gemini API Key. It's stored locally in your browser.</p>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Gemini API Key</label>
-                    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                </div>
-                <button id="saveKeyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all transform active:scale-95">
-                    Save & Continue
-                </button>
-                <p class="text-xs text-center text-slate-400 mt-4">
-                    Don't have one? <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Get a key here</a>
+            <h2 class="text-2xl font-bold mb-2">Settings</h2>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gemini API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                <p class="text-xs text-slate-400 mt-2">
+                    Stored locally. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Get a key</a>
                 </p>
+            </div>
+
+
+            <div class="mb-6 pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-medium text-slate-700 mb-2">Local Storage</h3>
+                <p class="text-xs text-slate-500 mb-3">Clear saved session data from this device.</p>
+                <button id="clearDataBtn" class="w-full py-2 px-4 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors">
+                    Clear Saved Data
+                </button>
+            </div>
+
+
+            <div class="flex gap-3">
+                <button id="closeSettingsBtn" class="flex-1 py-3 px-4 rounded-lg border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all">
+                    Cancel
+                </button>
+                <button id="saveKeyBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-blue-200">
+                    Save
+                </button>
             </div>
         </div>
     </div>
@@ -101,6 +115,23 @@
                     <button onclick="setDifficulty('medium')" id="btnMedium" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white shadow-sm text-blue-600 transition-all">Medium</button>
                     <button onclick="setDifficulty('hard')" id="btnHard" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all">Hard</button>
                 </div>
+            </div>
+
+
+            <!-- Resume Session Card (Hidden by default) -->
+            <div id="resumeCard" class="hidden max-w-2xl mx-auto mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-200 text-blue-700 p-2 rounded-lg">
+                        <i class="ph ph-clock-counter-clockwise text-xl"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-semibold text-slate-800 text-sm">Resume Previous Session</h4>
+                        <p id="resumeInfo" class="text-xs text-slate-600">Found saved content</p>
+                    </div>
+                </div>
+                <button id="resumeBtn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md shadow-blue-200">
+                    Load & Generate
+                </button>
             </div>
         </div>
 
@@ -286,15 +317,109 @@
         scoreWrong: document.getElementById('scoreWrong'),
         resultsView: document.getElementById('resultsView'),
         finalScore: document.getElementById('finalScore'),
-        displayDifficulty: document.getElementById('displayDifficulty')
+        displayDifficulty: document.getElementById('displayDifficulty'),
+        resumeCard: document.getElementById('resumeCard'),
+        resumeInfo: document.getElementById('resumeInfo'),
+        resumeBtn: document.getElementById('resumeBtn'),
+        clearDataBtn: document.getElementById('clearDataBtn')
     };
 
 
+    // --- IndexedDB Logic for Local Storage ---
+    const DB_NAME = 'DocuQuizDB';
+    const STORE_NAME = 'sessions';
+    const SESSION_ID = 'last_session';
+
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onerror = () => { console.error("DB Error", request.error); reject(request.error); };
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+        });
+    }
+
+
+    async function saveSession(text, fileCount, fileNames) {
+        try {
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            await store.put({
+                id: SESSION_ID,
+                text: text,
+                fileCount: fileCount,
+                fileNames: fileNames,
+                timestamp: new Date().toISOString()
+            });
+            console.log("Session saved locally.");
+        } catch (err) {
+            console.error("Failed to save session:", err);
+        }
+    }
+
+
+    async function loadSession() {
+        try {
+            const db = await openDB();
+            return new Promise((resolve) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.get(SESSION_ID);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        } catch (err) {
+            console.error("Failed to load session:", err);
+            return null;
+        }
+    }
+
+
+    async function clearSession() {
+        try {
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete(SESSION_ID);
+            els.resumeCard.classList.add('hidden');
+            console.log("Session cleared.");
+        } catch (err) {
+            console.error("Failed to clear session:", err);
+        }
+    }
+
+
     // --- Initialization ---
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Check for API Key
         if (!apiKey) {
             els.apiKeyModal.classList.remove('hidden');
             els.apiKeyModal.classList.add('flex');
+        }
+
+
+        // Check for saved session
+        const savedData = await loadSession();
+        if (savedData && savedData.text) {
+            els.resumeCard.classList.remove('hidden');
+            const date = new Date(savedData.timestamp).toLocaleDateString();
+            els.resumeInfo.textContent = `Resume from ${date} • ${savedData.fileCount} files processed`;
+
+            els.resumeBtn.onclick = () => {
+                extractedTextGlobal = savedData.text;
+                switchSection('processing');
+                updateStatus("Restoring Session...", `Loading content from ${savedData.fileCount} files...`, 100);
+                // Slight delay for UX
+                setTimeout(() => {
+                    generateQuestions(extractedTextGlobal);
+                }, 800);
+            };
         }
     });
 
@@ -307,7 +432,24 @@
             els.apiKeyModal.classList.add('hidden');
             els.apiKeyModal.classList.remove('flex');
         } else {
-            alert('Please enter a valid API key');
+            // Allow closing if key exists but they were editing settings
+            if(apiKey) {
+                els.apiKeyModal.classList.add('hidden');
+                els.apiKeyModal.classList.remove('flex');
+            } else {
+                alert('Please enter a valid API key');
+            }
+        }
+    });
+
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+        // If we have a key, we can close. If not, we stay open.
+        if(apiKey) {
+            els.apiKeyModal.classList.add('hidden');
+            els.apiKeyModal.classList.remove('flex');
+        } else {
+            alert("You need an API key to use this app.");
         }
     });
 
@@ -316,6 +458,14 @@
         els.apiKeyModal.classList.remove('hidden');
         els.apiKeyModal.classList.add('flex');
         els.apiKeyInput.value = apiKey;
+    });
+
+
+    document.getElementById('clearDataBtn').addEventListener('click', async () => {
+        if(confirm("Are you sure you want to delete saved session data? This cannot be undone.")) {
+            await clearSession();
+            alert("Saved data cleared.");
+        }
     });
 
 
@@ -377,9 +527,8 @@
             }
 
 
-            // --- FIX: Actually save the session now that we have the text ---
+            // --- Save the session ---
             await saveSession(extractedTextGlobal, processedCount, files.map(f => f.name));
-            // ---------------------------------------------------------------
 
 
             updateStatus("Generating Questions...", `Consulting Gemini AI (${difficultyLevel} mode)...`, 75);
