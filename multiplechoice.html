@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini PDF Quiz Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PDF.js for parsing PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
@@ -28,23 +26,10 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #3b82f6;
-            width: 24px;
-            height: 24px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-
-<!-- Header -->
 <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -62,11 +47,8 @@
     </div>
 </header>
 
-
-<!-- Main Content -->
 <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8">
 
-    <!-- API Key Modal & Settings -->
     <div id="apiKeyModal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-fade-in">
             <h2 class="text-2xl font-bold mb-2">Settings</h2>
@@ -79,7 +61,6 @@
                 </p>
             </div>
 
-
             <div class="mb-6 pt-6 border-t border-slate-100">
                 <h3 class="text-sm font-medium text-slate-700 mb-2">Local Storage</h3>
                 <p class="text-xs text-slate-500 mb-3">Clear saved session data from this device.</p>
@@ -87,7 +68,6 @@
                     Clear Saved Data
                 </button>
             </div>
-
 
             <div class="flex gap-3">
                 <button id="closeSettingsBtn" class="flex-1 py-3 px-4 rounded-lg border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all">
@@ -100,14 +80,11 @@
         </div>
     </div>
 
-
-    <!-- State 1: Upload Zone -->
     <div id="uploadSection" class="animate-fade-in">
         <div class="text-center mb-10">
             <h2 class="text-3xl font-bold text-slate-800 mb-4">Upload your Study Materials</h2>
             <p class="text-slate-600 max-w-2xl mx-auto mb-8">Select a folder containing PDFs. We'll scan them, extract the text locally, and generate a custom quiz for you.</p>
 
-            <!-- Difficulty Selector -->
             <div class="max-w-md mx-auto mb-8">
                 <label class="block text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Select Difficulty</label>
                 <div class="flex bg-slate-200 p-1.5 rounded-xl">
@@ -117,8 +94,6 @@
                 </div>
             </div>
 
-
-            <!-- Resume Session Card (Hidden by default) -->
             <div id="resumeCard" class="hidden max-w-2xl mx-auto mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center justify-between animate-fade-in">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-200 text-blue-700 p-2 rounded-lg">
@@ -135,7 +110,6 @@
             </div>
         </div>
 
-
         <div class="max-w-2xl mx-auto">
             <label class="group flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-slate-300 rounded-2xl cursor-pointer bg-white hover:bg-slate-50 hover:border-blue-400 transition-all relative overflow-hidden">
                 <div class="flex flex-col items-center justify-center pt-5 pb-6 relative z-10">
@@ -146,15 +120,12 @@
                     <p class="text-sm text-slate-500">or drag and drop directory here</p>
                     <p class="mt-4 text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Supports .pdf files</p>
                 </div>
-                <!-- The magical inputs -->
                 <input id="folderInput" type="file" class="hidden" webkitdirectory directory multiple />
                 <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-10 transition-opacity"></div>
             </label>
         </div>
     </div>
 
-
-    <!-- State 2: Processing -->
     <div id="processingSection" class="hidden flex flex-col items-center justify-center py-12 animate-fade-in">
         <div class="relative w-24 h-24 mb-8">
             <svg class="animate-spin w-full h-full text-blue-200" viewBox="0 0 24 24">
@@ -171,12 +142,8 @@
         </div>
     </div>
 
-
-    <!-- State 3: Quiz Interface -->
     <div id="quizSection" class="hidden animate-fade-in">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <!-- Left: Progress & Stats -->
             <div class="lg:col-span-1 space-y-6">
                 <div class="glass-panel p-6 rounded-2xl shadow-sm">
                     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Progress</h3>
@@ -188,7 +155,6 @@
                         <div id="quizProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
                     </div>
                 </div>
-
 
                 <div class="glass-panel p-6 rounded-2xl shadow-sm">
                     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Score</h3>
@@ -209,18 +175,13 @@
                     <span id="displayDifficulty" class="font-semibold text-blue-600 uppercase">Medium</span>
                 </div>
 
-
                 <button onclick="window.location.reload()" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
                     <i class="ph ph-upload-simple"></i> Upload New Folder
                 </button>
             </div>
 
-
-            <!-- Right: Question Card -->
             <div class="lg:col-span-2">
                 <div id="questionCard" class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden relative min-h-[400px]">
-
-                    <!-- Question Header -->
                     <div class="p-8 border-b border-slate-100">
                         <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold mb-4">Multiple Choice</span>
                         <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed">
@@ -228,14 +189,8 @@
                         </h2>
                     </div>
 
+                    <div id="optionsContainer" class="p-8 space-y-3"></div>
 
-                    <!-- Options -->
-                    <div id="optionsContainer" class="p-8 space-y-3">
-                        <!-- Options injected here -->
-                    </div>
-
-
-                    <!-- Feedback Overlay (Hidden initially) -->
                     <div id="feedbackOverlay" class="hidden p-6 bg-slate-50 border-t border-slate-200 animate-fade-in">
                         <div class="flex items-start gap-4">
                             <div id="feedbackIcon" class="mt-1 text-2xl"></div>
@@ -251,45 +206,34 @@
                         </div>
                     </div>
 
-
-                    <!-- Results View (Hidden initially) -->
                     <div id="resultsView" class="hidden absolute inset-0 bg-white z-20 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
                         <div class="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-4xl mb-6">
                             <i class="ph ph-trophy"></i>
                         </div>
                         <h2 class="text-3xl font-bold text-slate-800 mb-2">Quiz Complete!</h2>
                         <p class="text-slate-600 mb-8">Here is how you performed on your documents.</p>
-
                         <div class="text-5xl font-bold text-blue-600 mb-2" id="finalScore">85%</div>
                         <p class="text-sm text-slate-400 mb-8">Accuracy</p>
-
-
                         <button onclick="window.location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
                             Create New Quiz
                         </button>
                     </div>
-
-
                 </div>
             </div>
         </div>
     </div>
-
-
 </main>
-
 
 <script>
     // --- Configuration & State ---
-    let apiKey = 'AIzaSyDBSCJCAS9yDjgEEJtP7ZZmKZjdCLHAjt4';
-    const folderInput = document.getElementById('folderInput');
+    let apiKey = localStorage.getItem('gemini_api_key') || '';
 
+    const folderInput = document.getElementById('folderInput');
     let quizData = [];
     let currentQuestionIndex = 0;
     let score = { correct: 0, wrong: 0 };
     let extractedTextGlobal = "";
     let difficultyLevel = 'medium';
-
 
     // --- DOM Elements ---
     const sections = {
@@ -297,6 +241,8 @@
         processing: document.getElementById('processingSection'),
         quiz: document.getElementById('quizSection')
     };
+
+    // Select elements after DOM loads to be safe, but since script is at end of body, this is fine
     const els = {
         apiKeyModal: document.getElementById('apiKeyModal'),
         apiKeyInput: document.getElementById('apiKeyInput'),
@@ -324,12 +270,10 @@
         clearDataBtn: document.getElementById('clearDataBtn')
     };
 
-
     // --- IndexedDB Logic for Local Storage ---
     const DB_NAME = 'DocuQuizDB';
     const STORE_NAME = 'sessions';
     const SESSION_ID = 'last_session';
-
 
     function openDB() {
         return new Promise((resolve, reject) => {
@@ -344,7 +288,6 @@
             };
         });
     }
-
 
     async function saveSession(text, fileCount, fileNames) {
         try {
@@ -364,7 +307,6 @@
         }
     }
 
-
     async function loadSession() {
         try {
             const db = await openDB();
@@ -381,7 +323,6 @@
         }
     }
 
-
     async function clearSession() {
         try {
             const db = await openDB();
@@ -394,15 +335,19 @@
         }
     }
 
-
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', async () => {
-        // Check for API Key
-        if (!apiKey) {
+        // Log current key status for debugging
+        console.log("Current API Key Status:", apiKey ? "Found key" : "No key found");
+
+        // CHECK: If no key is found, show the popup
+        if (!apiKey || apiKey === 'GEMINI_API_KEY') {
             els.apiKeyModal.classList.remove('hidden');
             els.apiKeyModal.classList.add('flex');
+        } else {
+            // If key exists, pre-fill settings input
+            els.apiKeyInput.value = apiKey;
         }
-
 
         // Check for saved session
         const savedData = await loadSession();
@@ -415,7 +360,6 @@
                 extractedTextGlobal = savedData.text;
                 switchSection('processing');
                 updateStatus("Restoring Session...", `Loading content from ${savedData.fileCount} files...`, 100);
-                // Slight delay for UX
                 setTimeout(() => {
                     generateQuestions(extractedTextGlobal);
                 }, 800);
@@ -423,7 +367,7 @@
         }
     });
 
-
+    // Save Key Button Logic
     document.getElementById('saveKeyBtn').addEventListener('click', () => {
         const val = els.apiKeyInput.value.trim();
         if (val) {
@@ -432,20 +376,13 @@
             els.apiKeyModal.classList.add('hidden');
             els.apiKeyModal.classList.remove('flex');
         } else {
-            // Allow closing if key exists but they were editing settings
-            if(apiKey) {
-                els.apiKeyModal.classList.add('hidden');
-                els.apiKeyModal.classList.remove('flex');
-            } else {
-                alert('Please enter a valid API key');
-            }
+            alert('Please enter a valid API key');
         }
     });
 
-
+    // Close Settings Logic
     document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-        // If we have a key, we can close. If not, we stay open.
-        if(apiKey) {
+        if(apiKey && apiKey !== 'GEMINI_API_KEY') {
             els.apiKeyModal.classList.add('hidden');
             els.apiKeyModal.classList.remove('flex');
         } else {
@@ -453,87 +390,72 @@
         }
     });
 
-
+    // Open Settings Logic
     document.getElementById('settingsBtn').addEventListener('click', () => {
         els.apiKeyModal.classList.remove('hidden');
         els.apiKeyModal.classList.add('flex');
         els.apiKeyInput.value = apiKey;
     });
 
-
+    // Clear Data Logic
     document.getElementById('clearDataBtn').addEventListener('click', async () => {
         if(confirm("Are you sure you want to delete saved session data? This cannot be undone.")) {
             await clearSession();
-            alert("Saved data cleared.");
+            // Also clear API key if you want a full reset
+            localStorage.removeItem('gemini_api_key');
+            apiKey = '';
+            els.apiKeyInput.value = '';
+            alert("Saved data cleared. You will need to re-enter your API key.");
+            location.reload(); // Reload to force the popup logic to run again
         }
     });
-
 
     // --- Difficulty Logic ---
     function setDifficulty(level) {
         difficultyLevel = level;
-
-        // Update UI buttons
         const buttons = ['Easy', 'Medium', 'Hard'];
         buttons.forEach(btn => {
             const el = document.getElementById(`btn${btn}`);
             const isSelected = btn.toLowerCase() === level;
-
             if (isSelected) {
                 el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white shadow-sm text-blue-600 transition-all transform scale-105';
             } else {
                 el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-800 transition-all';
             }
         });
-
-
         els.displayDifficulty.textContent = level;
     }
-
 
     // --- File Handling & PDF Parsing ---
     folderInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
-
         if (files.length === 0) {
             alert("No PDF files found in this folder.");
             return;
         }
 
-
         switchSection('processing');
         extractedTextGlobal = "";
         let processedCount = 0;
 
-
         try {
-            // Process files sequentially to avoid memory spikes
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 updateStatus(`Reading ${file.name}...`, `Processing file ${i + 1} of ${files.length}`, (i / files.length) * 50);
-
                 const text = await extractTextFromPDF(file);
                 extractedTextGlobal += `\n--- Document: ${file.name} ---\n${text}`;
-
                 processedCount++;
             }
 
-
-            // Truncate if MASSIVE
             const MAX_CHARS = 1000000;
             if (extractedTextGlobal.length > MAX_CHARS) {
                 console.warn("Text content too large, truncating...");
                 extractedTextGlobal = extractedTextGlobal.substring(0, MAX_CHARS);
             }
 
-
-            // --- Save the session ---
             await saveSession(extractedTextGlobal, processedCount, files.map(f => f.name));
-
-
             updateStatus("Generating Questions...", `Consulting Gemini AI (${difficultyLevel} mode)...`, 75);
             await generateQuestions(extractedTextGlobal);
-
 
         } catch (error) {
             console.error(error);
@@ -542,27 +464,19 @@
         }
     });
 
-
     async function extractTextFromPDF(file) {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let fullText = "";
-
-
-        // Limit pages per PDF if truly massive to save time? No, let's read all.
-        // But yield to UI thread
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             const pageText = textContent.items.map(item => item.str).join(' ');
             fullText += pageText + "\n";
-
-            // Yield to main thread every 5 pages to prevent UI freeze
             if (i % 5 === 0) await new Promise(r => setTimeout(r, 0));
         }
         return fullText;
     }
-
 
     // --- Gemini AI Interaction ---
     async function generateQuestions(contextText) {
@@ -575,75 +489,57 @@
             difficultyPrompt = "DIFFICULTY: HARD. Focus on complex analysis, synthesis, and multi-step reasoning. Questions should challenge the user to connect different parts of the text and infer conclusions.";
         }
 
-
         const prompt = `
             You are an expert educator. Based strictly on the provided text, generate 10 high-quality multiple-choice questions.
-
             ${difficultyPrompt}
-
             Format the output strictly as a JSON array of objects. Do not wrap in markdown code blocks.
-
             IMPORTANT: Use UNICODE characters for any mathematical symbols, exponents, or formulas (e.g., use ² instead of ^2, π instead of \\pi, → instead of \\rightarrow, √ instead of \\sqrt).
             DO NOT use LaTeX formatting or dollar signs ($$) as there is no LaTeX renderer available.
-
             Each object must have:
             - "question": string
             - "options": array of 4 strings
             - "correctAnswer": integer (0-3, index of the correct option)
             - "explanation": string (brief explanation of why it is correct)
 
-
             The Text Content is:
             ${contextText}
             `;
 
-
-        // Helper for Exponential Backoff
         const makeRequest = async (retryCount = 0) => {
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                // Ensure we are using the current apiKey
+                const currentKey = apiKey || localStorage.getItem('gemini_api_key');
+                if(!currentKey) throw new Error("API Key missing");
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${currentKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: {
-                            responseMimeType: "application/json"
-                        }
+                        generationConfig: { responseMimeType: "application/json" }
                     })
                 });
 
-
                 if (!response.ok) {
-                    // Retry on 429 (Too Many Requests) or 5xx (Server Errors)
                     if ((response.status === 429 || response.status >= 500) && retryCount < 5) {
                         const delay = Math.pow(2, retryCount) * 1000;
-                        console.log(`Retrying API call (Attempt ${retryCount + 1}/5) in ${delay}ms...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
                         return makeRequest(retryCount + 1);
                     }
-
-                    // Parse detailed error if possible
                     let errorMessage = `API Error ${response.status}`;
                     try {
                         const errorBody = await response.json();
-                        if (errorBody.error && errorBody.error.message) {
-                            errorMessage += `: ${errorBody.error.message}`;
-                        }
+                        if (errorBody.error && errorBody.error.message) errorMessage += `: ${errorBody.error.message}`;
                     } catch (e) {
-                        // If parsing JSON fails, try text
                         const errorText = await response.text();
                         if (errorText) errorMessage += `: ${errorText}`;
                     }
                     throw new Error(errorMessage);
                 }
-
-
                 return await response.json();
             } catch (error) {
-                // Retry on network failures (fetch throws)
                 if (retryCount < 5 && (error.message.includes('Failed to fetch') || error.name === 'TypeError')) {
                     const delay = Math.pow(2, retryCount) * 1000;
-                    console.log(`Network error, retrying (Attempt ${retryCount + 1}/5)...`);
                     await new Promise(resolve => setTimeout(resolve, delay));
                     return makeRequest(retryCount + 1);
                 }
@@ -651,36 +547,21 @@
             }
         };
 
-
         try {
             updateStatus("Generating Questions...", `Consulting Gemini AI (${difficultyLevel})...`, 75);
             const data = await makeRequest();
-
-            if (!data.candidates || !data.candidates[0].content) {
-                throw new Error("Gemini returned an empty response.");
-            }
-
-
+            if (!data.candidates || !data.candidates[0].content) throw new Error("Gemini returned an empty response.");
             let rawText = data.candidates[0].content.parts[0].text;
-
-            // Clean up markdown if Gemini adds it despite instructions
             rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
             quizData = JSON.parse(rawText);
-
             updateStatus("Ready!", "Quiz generated successfully", 100);
-            setTimeout(() => {
-                startQuiz();
-            }, 500);
-
-
+            setTimeout(() => { startQuiz(); }, 500);
         } catch (error) {
             console.error(error);
             alert(`Failed to generate quiz:\n${error.message}`);
             switchSection('upload');
         }
     }
-
 
     // --- Quiz Logic ---
     function startQuiz() {
@@ -691,27 +572,20 @@
         renderQuestion();
     }
 
-
     function renderQuestion() {
         const q = quizData[currentQuestionIndex];
-
-        // Update Progress
         els.currentQuestionNum.textContent = currentQuestionIndex + 1;
         els.totalQuestionNum.textContent = quizData.length;
         els.quizProgressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
 
-
-        // Reset UI
         els.questionText.textContent = q.question;
         els.optionsContainer.innerHTML = '';
         els.feedbackOverlay.classList.add('hidden');
 
-        // Render Options
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-blue-200 hover:bg-blue-50 transition-all group relative overflow-hidden`;
             btn.onclick = () => handleAnswer(idx);
-
             btn.innerHTML = `
                     <div class="flex items-center gap-3 relative z-10">
                         <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 font-bold text-sm group-hover:bg-white group-hover:text-blue-600 transition-colors">
@@ -724,18 +598,12 @@
         });
     }
 
-
     function handleAnswer(selectedIndex) {
         const q = quizData[currentQuestionIndex];
         const isCorrect = selectedIndex === q.correctAnswer;
         const buttons = els.optionsContainer.querySelectorAll('button');
-
-
-        // Disable all buttons
         buttons.forEach(btn => btn.disabled = true);
 
-
-        // Style buttons
         buttons[selectedIndex].classList.remove('border-slate-100', 'hover:border-blue-200', 'hover:bg-blue-50');
         if (isCorrect) {
             buttons[selectedIndex].classList.add('bg-green-100', 'border-green-500', 'text-green-800');
@@ -745,33 +613,24 @@
         } else {
             buttons[selectedIndex].classList.add('bg-red-100', 'border-red-500', 'text-red-800');
             buttons[selectedIndex].querySelector('span').classList.add('bg-red-200', 'text-red-800');
-
-            // Highlight correct one
             const correctBtn = buttons[q.correctAnswer];
             correctBtn.classList.add('bg-green-50', 'border-green-300');
-
             score.wrong++;
             showFeedback(false, "Incorrect", q.explanation);
         }
         updateScoreBoard();
     }
 
-
     function showFeedback(isCorrect, title, text) {
         els.feedbackOverlay.classList.remove('hidden');
         els.feedbackTitle.textContent = title;
         els.feedbackTitle.className = isCorrect ? "font-bold text-lg mb-1 text-green-700" : "font-bold text-lg mb-1 text-red-700";
         els.feedbackText.textContent = text;
-
         els.feedbackIcon.innerHTML = isCorrect
             ? '<i class="ph ph-check-circle text-green-600"></i>'
             : '<i class="ph ph-x-circle text-red-600"></i>';
-
-
-        // Scroll to feedback on mobile
         els.feedbackOverlay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
 
     els.nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
@@ -782,7 +641,6 @@
         }
     });
 
-
     function showResults() {
         els.resultsView.classList.remove('hidden');
         els.resultsView.classList.add('flex');
@@ -790,28 +648,21 @@
         els.finalScore.textContent = `${percentage}%`;
     }
 
-
     function updateScoreBoard() {
         els.scoreCorrect.textContent = score.correct;
         els.scoreWrong.textContent = score.wrong;
     }
 
-
-    // --- Utilities ---
     function switchSection(id) {
         Object.values(sections).forEach(el => el.classList.add('hidden'));
         sections[id].classList.remove('hidden');
     }
-
 
     function updateStatus(title, detail, progress) {
         els.processStatus.textContent = title;
         els.processDetail.textContent = detail;
         els.progressBar.style.width = `${progress}%`;
     }
-
-
 </script>
 </body>
 </html>
-

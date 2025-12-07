@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="47d5a210-42a1-442c-9a90-c6f3aa57637a" name="Changes" comment="-new resume&#10;-redid text and sizing&#10;-misc">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplechoice.html" beforeDir="false" afterPath="$PROJECT_DIR$/multiplechoice.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,7 +120,9 @@
       <workItem from="1764601580902" duration="1087000" />
       <workItem from="1764869230336" duration="613000" />
       <workItem from="1764965067403" duration="494000" />
-      <workItem from="1764965572105" duration="2458000" />
+      <workItem from="1764965572105" duration="2958000" />
+      <workItem from="1764978796984" duration="109000" />
+      <workItem from="1765127272442" duration="430000" />
     </task>
     <task id="LOCAL-00001" summary="adding to repository">
       <option name="closed" value="true" />
@@ -385,7 +388,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764968177615</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="-new resume&#10;-redid text and sizing&#10;-misc">
+      <option name="closed" value="true" />
+      <created>1764968458505</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1764968458505</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
