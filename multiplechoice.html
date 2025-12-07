@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini PDF Quiz Generator v5 (Adaptive)</title>
+    <title>Gemini PDF Quiz Generator v6 (Final Polished)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -41,6 +41,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
         :root {
+            /* Default to Blue */
             --primary-50: 239 246 255;
             --primary-100: 219 234 254;
             --primary-500: 59 130 246;
@@ -90,7 +91,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-xl leading-tight">DocuQuiz AI</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Deep Learning & Stats Active</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Adaptive Learning Engine v6</p>
             </div>
         </div>
 
@@ -99,15 +100,17 @@
                 <button id="themeMenuBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-500 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                     <i class="ph ph-palette text-2xl"></i>
                 </button>
-                <div class="absolute right-0 pt-2 w-64 hidden group-hover:block hover:block z-50 animate-fade-in">
+
+                <div class="absolute right-0 pt-4 w-64 hidden group-hover:block hover:block z-50 animate-fade-in">
                     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4">
                         <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Color Theme</h3>
                         <div class="flex justify-between gap-2 mb-4">
-                            <button onclick="setThemeColor('blue')" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-blue-400"></button>
-                            <button onclick="setThemeColor('violet')" class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-violet-400"></button>
-                            <button onclick="setThemeColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-emerald-400"></button>
-                            <button onclick="setThemeColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-amber-400"></button>
+                            <button onclick="setThemeColor('blue')" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-blue-400" title="Blue"></button>
+                            <button onclick="setThemeColor('violet')" class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-violet-400" title="Violet"></button>
+                            <button onclick="setThemeColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-emerald-400" title="Emerald"></button>
+                            <button onclick="setThemeColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-amber-400" title="Amber"></button>
                         </div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Mode</h3>
                         <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                             <button onclick="setMode('light')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Light</button>
                             <button onclick="setMode('dark')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Dark</button>
@@ -155,9 +158,9 @@
                 </div>
                 <div class="flex-1">
                     <h4 class="font-bold text-sm text-purple-900 dark:text-purple-100">Adaptive Mode Active</h4>
-                    <p class="text-xs text-purple-700 dark:text-purple-300">Targeting your weak topics from the last session.</p>
+                    <p class="text-xs text-purple-700 dark:text-purple-300">Targeting your weak topics from last time.</p>
                 </div>
-                <button onclick="clearAdaptiveMode()" class="p-2 text-slate-400 hover:text-red-500 transition-colors"><i class="ph ph-x"></i></button>
+                <button onclick="clearAdaptiveMode()" class="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Cancel Adaptive Mode"><i class="ph ph-x"></i></button>
             </div>
 
             <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -301,11 +304,14 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-auto pt-6 border-t border-slate-100 dark:border-slate-800">
-                            <button onclick="resetToHome()" class="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                Standard Reset
+                            <button id="downloadResultsBtn" class="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                                <i class="ph ph-download-simple"></i> Download Results
                             </button>
                             <button id="adaptiveResetBtn" class="py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2">
                                 <i class="ph ph-magic-wand"></i> Fix Weak Areas (Next Quiz)
+                            </button>
+                            <button onclick="resetToHome()" class="md:col-span-2 py-3 px-4 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                Start Fresh (Standard Reset)
                             </button>
                         </div>
                     </div>
@@ -326,7 +332,7 @@
     let extractedTextGlobal = "";
     let difficultyLevel = 'medium';
     let isDeepScanActive = false;
-    let weakTopicsList = []; // Stores topics to focus on next
+    let weakTopicsList = JSON.parse(localStorage.getItem('weakTopics') || '[]'); // Persistent Weak Topics
 
     // --- DOM ---
     const els = {
@@ -361,7 +367,8 @@
         deepScanToggle: document.getElementById('deepScanToggle'),
         folderInput: document.getElementById('folderInput'),
         adaptiveBanner: document.getElementById('adaptiveBanner'),
-        adaptiveResetBtn: document.getElementById('adaptiveResetBtn')
+        adaptiveResetBtn: document.getElementById('adaptiveResetBtn'),
+        downloadResultsBtn: document.getElementById('downloadResultsBtn')
     };
 
     // --- Initialization ---
@@ -382,14 +389,19 @@
         // Setup Adaptive Reset
         els.adaptiveResetBtn.addEventListener('click', () => {
             if(weakTopicsList.length > 0) {
-                // Activate adaptive mode for next round
-                els.adaptiveBanner.classList.remove('hidden');
                 switchSection('upload');
+                checkAdaptiveBanner();
             } else {
                 alert("Great job! You didn't miss enough questions to trigger a focused review.");
                 resetToHome();
             }
         });
+
+        // Setup Download
+        els.downloadResultsBtn.addEventListener('click', downloadResults);
+
+        // Check for persistent weak topics on load
+        checkAdaptiveBanner();
 
         const savedData = await loadSession();
         if (savedData && savedData.text) {
@@ -443,7 +455,7 @@
     });
     document.getElementById('settingsBtn').addEventListener('click', () => { els.apiKeyModal.classList.remove('hidden'); els.apiKeyModal.classList.add('flex'); els.apiKeyInput.value = apiKey; });
     document.getElementById('closeSettingsBtn').addEventListener('click', () => { els.apiKeyModal.classList.add('hidden'); els.apiKeyModal.classList.remove('flex'); });
-    document.getElementById('clearDataBtn').addEventListener('click', async () => { if(confirm("Clear data?")) { await clearSession(); localStorage.removeItem('gemini_api_key'); location.reload(); } });
+    document.getElementById('clearDataBtn').addEventListener('click', async () => { if(confirm("Clear data?")) { await clearSession(); localStorage.removeItem('gemini_api_key'); localStorage.removeItem('weakTopics'); location.reload(); } });
 
     // --- UI Logic ---
     window.setDifficulty = (level) => {
@@ -458,13 +470,40 @@
 
     window.clearAdaptiveMode = () => {
         weakTopicsList = [];
-        els.adaptiveBanner.classList.add('hidden');
+        localStorage.removeItem('weakTopics');
+        checkAdaptiveBanner();
     };
 
+    function checkAdaptiveBanner() {
+        if(weakTopicsList.length > 0) els.adaptiveBanner.classList.remove('hidden');
+        else els.adaptiveBanner.classList.add('hidden');
+    }
+
     window.resetToHome = () => {
-        clearAdaptiveMode();
+        // Just standard reset, don't clear memory of weak topics unless user explicit cancels
         switchSection('upload');
     };
+
+    function downloadResults() {
+        let content = "DOCUQUIZ AI - RESULTS SUMMARY\n\n";
+        content += `Date: ${new Date().toLocaleDateString()}\n`;
+        content += `Score: ${score.correct}/${quizData.length}\n\n`;
+        content += "--- QUESTIONS ---\n\n";
+
+        quizData.forEach((q, i) => {
+            content += `${i+1}. ${q.question}\n`;
+            content += `Correct Answer: ${q.options[q.correctAnswer]}\n`;
+            content += `Explanation: ${q.explanation}\n`;
+            content += `Topic: ${q.topic || 'General'}\n\n`;
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `DocuQuiz-Results-${Date.now()}.txt`;
+        a.click();
+    }
 
     // --- File Handling ---
     els.folderInput.addEventListener('change', async (e) => {
@@ -498,7 +537,9 @@
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            fullText += textContent.items.map(item => item.str).join(' ') + "\n";
+            // Improved whitespace handling
+            const items = textContent.items.map(item => item.str);
+            fullText += items.join(" ") + "\n\n";
             if (i % 5 === 0) await new Promise(r => setTimeout(r, 0));
         }
         return fullText;
@@ -518,7 +559,6 @@
 
         let promptIntro = `You are an expert professor. Generate ${qCount} high-quality multiple-choice questions based on the provided text.`;
 
-        // Inject Adaptive Instructions
         if (isAdaptive && weakTopicsList.length > 0) {
             promptIntro += `
 
@@ -570,8 +610,17 @@
             });
             const data = await response.json();
             if (!data.candidates) throw new Error("Empty response");
-            let rawText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
-            quizData = JSON.parse(rawText);
+
+            // ROBUST JSON PARSING
+            let rawText = data.candidates[0].content.parts[0].text;
+            // Find the first '[' and the last ']'
+            const jsonStart = rawText.indexOf('[');
+            const jsonEnd = rawText.lastIndexOf(']');
+
+            if (jsonStart === -1 || jsonEnd === -1) throw new Error("AI did not return valid JSON array");
+
+            const cleanJson = rawText.substring(jsonStart, jsonEnd + 1);
+            quizData = JSON.parse(cleanJson);
 
             updateStatus("Ready!", "Quiz generated", 100);
             setTimeout(() => startQuiz(), 500);
@@ -617,7 +666,7 @@
     function handleAnswer(selectedIndex) {
         const q = quizData[currentQuestionIndex];
         const isCorrect = selectedIndex === q.correctAnswer;
-        const topic = q.topic || "General";
+        const topic = q.topic || "General Concept";
 
         // Update Topic Stats
         if (!topicStats[topic]) topicStats[topic] = { correct: 0, wrong: 0 };
@@ -662,7 +711,7 @@
 
         const container = els.statsContent;
         container.innerHTML = '';
-        weakTopicsList = []; // Reset list
+        weakTopicsList = []; // Reset local list
 
         Object.keys(topicStats).forEach(topic => {
             const data = topicStats[topic];
@@ -686,6 +735,9 @@
                 </div>
             `;
         });
+
+        // PERSIST WEAK TOPICS
+        localStorage.setItem('weakTopics', JSON.stringify(weakTopicsList));
     }
 
     function updateScoreBoard() {
