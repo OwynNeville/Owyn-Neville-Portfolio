@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini PDF Quiz Generator v6 (Final Polished)</title>
+    <title>Gemini PDF Quiz Generator v6.1 (Fix)</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -91,7 +91,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-xl leading-tight">DocuQuiz AI</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Adaptive Learning Engine v6</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Adaptive Learning Engine</p>
             </div>
         </div>
 
@@ -706,7 +706,9 @@
     });
 
     function showStats() {
-        els.quiz.querySelector('.grid').classList.add('hidden'); // Hide main quiz UI
+        // DO NOT HIDE THE GRID. Hiding the grid hides the container of this view.
+        // els.quiz.querySelector('.grid').classList.add('hidden'); <-- REMOVED THIS LINE
+
         els.statsView.classList.remove('hidden');
 
         const container = els.statsContent;
