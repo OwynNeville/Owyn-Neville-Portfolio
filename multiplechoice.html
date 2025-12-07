@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini PDF Quiz Generator v3</title>
+    <title>Gemini PDF Quiz Generator v4</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,7 +12,15 @@
             theme: {
                 extend: {
                     colors: {
-                        slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                        slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' },
+                        // Define dynamic primary color using CSS variables
+                        primary: {
+                            50: 'rgb(var(--primary-50) / <alpha-value>)',
+                            100: 'rgb(var(--primary-100) / <alpha-value>)',
+                            500: 'rgb(var(--primary-500) / <alpha-value>)',
+                            600: 'rgb(var(--primary-600) / <alpha-value>)',
+                            700: 'rgb(var(--primary-700) / <alpha-value>)',
+                        }
                     }
                 }
             }
@@ -32,6 +40,16 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        /* CSS Variables for Dynamic Themes (Default Blue) */
+        :root {
+            --primary-50: 239 246 255;
+            --primary-100: 219 234 254;
+            --primary-500: 59 130 246;
+            --primary-600: 37 99 235;
+            --primary-700: 29 78 216;
+        }
+
         body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
 
         .glass-panel {
@@ -54,11 +72,36 @@
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Toggle Switch CSS */
-        .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: rgb(var(--primary-600));
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        .dark input[type=range]::-webkit-slider-runnable-track {
+            background: #334155;
+        }
 
-        /* Math formatting fixes */
+        /* Toggle Switch CSS */
+        .toggle-checkbox:checked { right: 0; border-color: rgb(var(--primary-600)); }
+        .toggle-checkbox:checked + .toggle-label { background-color: rgb(var(--primary-600)); }
+
         .katex { font-size: 1.1em; }
     </style>
 </head>
@@ -67,21 +110,39 @@
 <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors duration-300">
     <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg shadow-blue-500/30">
+            <div class="bg-primary-600 text-white p-2 rounded-lg shadow-lg shadow-primary-500/30 transition-colors duration-300">
                 <i class="ph ph-files text-2xl"></i>
             </div>
             <div>
                 <h1 class="font-bold text-xl leading-tight">DocuQuiz AI</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Deep Scan & Math Support Active</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Deep Scan & Math Active</p>
             </div>
         </div>
 
         <div class="flex items-center gap-2">
-            <button id="themeToggle" class="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-                <i id="themeIcon" class="ph ph-moon text-2xl"></i>
-            </button>
+            <div class="relative group">
+                <button id="themeMenuBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-500 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="ph ph-palette text-2xl"></i>
+                </button>
 
-            <button id="settingsBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                <div class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 hidden group-hover:block hover:block z-50 animate-fade-in">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Color Theme</h3>
+                    <div class="flex justify-between gap-2 mb-4">
+                        <button onclick="setThemeColor('blue')" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-blue-400"></button>
+                        <button onclick="setThemeColor('violet')" class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-violet-400"></button>
+                        <button onclick="setThemeColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-emerald-400"></button>
+                        <button onclick="setThemeColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-amber-400"></button>
+                    </div>
+
+                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Mode</h3>
+                    <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                        <button onclick="setMode('light')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Light</button>
+                        <button onclick="setMode('dark')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Dark</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="settingsBtn" class="p-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-500 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                 <i class="ph ph-gear text-2xl"></i>
             </button>
         </div>
@@ -94,46 +155,46 @@
     <div id="apiKeyModal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center backdrop-blur-sm">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-fade-in border border-slate-200 dark:border-slate-800">
             <h2 class="text-2xl font-bold mb-2 dark:text-white">Settings</h2>
-
             <div class="mb-6">
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Gemini API Key</label>
-                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white">
-                <p class="text-xs text-slate-400 mt-2">
-                    Stored locally. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-blue-500 hover:underline">Get a key</a>
-                </p>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary-500 outline-none transition-all dark:text-white">
+                <p class="text-xs text-slate-400 mt-2">Stored locally. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-primary-600 hover:underline">Get a key</a></p>
             </div>
-
             <div class="mb-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-                <h3 class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Local Storage</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-500 mb-3">Clear saved session data from this device.</p>
-                <button id="clearDataBtn" class="w-full py-2 px-4 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-medium transition-colors">
-                    Clear Saved Data
-                </button>
+                <button id="clearDataBtn" class="w-full py-2 px-4 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-medium transition-colors">Clear Saved Data</button>
             </div>
-
             <div class="flex gap-3">
-                <button id="closeSettingsBtn" class="flex-1 py-3 px-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-                    Cancel
-                </button>
-                <button id="saveKeyBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-blue-500/30">
-                    Save
-                </button>
+                <button id="closeSettingsBtn" class="flex-1 py-3 px-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Cancel</button>
+                <button id="saveKeyBtn" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-lg transition-all shadow-lg shadow-primary-500/30">Save</button>
             </div>
         </div>
     </div>
-
 
     <div id="uploadSection" class="animate-fade-in">
         <div class="text-center mb-10">
             <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-4">Upload your Study Materials</h2>
             <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">Select a folder of PDFs. Our AI will analyze them and generate a comprehensive quiz.</p>
 
-            <div class="max-w-md mx-auto mb-6">
-                <label class="block text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Select Difficulty</label>
-                <div class="flex bg-slate-200 dark:bg-slate-800 p-1.5 rounded-xl">
-                    <button onclick="setDifficulty('easy')" id="btnEasy" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">Easy</button>
-                    <button onclick="setDifficulty('medium')" id="btnMedium" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400 transition-all">Medium</button>
-                    <button onclick="setDifficulty('hard')" id="btnHard" class="flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">Hard</button>
+            <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Difficulty</label>
+                    <div class="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl">
+                        <button onclick="setDifficulty('easy')" id="btnEasy" class="flex-1 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all rounded-lg">Easy</button>
+                        <button onclick="setDifficulty('medium')" id="btnMedium" class="flex-1 py-2 text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-primary-600 dark:text-primary-500 transition-all rounded-lg">Medium</button>
+                        <button onclick="setDifficulty('hard')" id="btnHard" class="flex-1 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all rounded-lg">Hard</button>
+                        <button onclick="setDifficulty('mixed')" id="btnMixed" class="flex-1 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all rounded-lg">Mixed</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Questions</label>
+                        <span id="qCountDisplay" class="text-xs font-bold text-primary-600 bg-primary-50 dark:bg-slate-800 dark:text-primary-400 px-2 py-0.5 rounded-md">10</span>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <input type="range" id="qCountInput" min="5" max="30" step="5" value="10" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700">
+                    </div>
                 </div>
             </div>
 
@@ -147,14 +208,14 @@
                         Enable "Internet Knowledge" Expansion
                     </label>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Uses uploaded files as a <b>topic guide only</b>, then finds new questions online.
+                        Uses files as a <b>topic guide only</b>, then finds new questions online.
                     </p>
                 </div>
             </div>
 
-            <div id="resumeCard" class="hidden max-w-2xl mx-auto mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex items-center justify-between animate-fade-in">
+            <div id="resumeCard" class="hidden max-w-2xl mx-auto mb-6 bg-primary-50 dark:bg-slate-800/50 border border-primary-100 dark:border-slate-700 rounded-xl p-4 flex items-center justify-between animate-fade-in">
                 <div class="flex items-center gap-3">
-                    <div class="bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-200 p-2 rounded-lg">
+                    <div class="bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-primary-400 p-2 rounded-lg">
                         <i class="ph ph-clock-counter-clockwise text-xl"></i>
                     </div>
                     <div class="text-left">
@@ -162,20 +223,19 @@
                         <p id="resumeInfo" class="text-xs text-slate-600 dark:text-slate-400">Found saved content</p>
                     </div>
                 </div>
-                <button id="resumeBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-md shadow-blue-500/30">
+                <button id="resumeBtn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors shadow-md shadow-primary-500/30">
                     Load & Generate
                 </button>
             </div>
         </div>
 
-
         <div class="max-w-2xl mx-auto">
-            <label class="group flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-500 transition-all relative overflow-hidden">
+            <label class="group flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-primary-400 dark:hover:border-primary-500 transition-all relative overflow-hidden">
                 <div class="flex flex-col items-center justify-center pt-5 pb-6 relative z-10">
-                    <div class="bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div class="bg-primary-50 dark:bg-slate-800 text-primary-600 dark:text-primary-400 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
                         <i class="ph ph-folder-open text-3xl"></i>
                     </div>
-                    <p class="mb-2 text-lg text-slate-700 dark:text-slate-300 font-medium">Click to select a <span class="text-blue-600 dark:text-blue-400">Folder</span></p>
+                    <p class="mb-2 text-lg text-slate-700 dark:text-slate-300 font-medium">Click to select a <span class="text-primary-600 dark:text-primary-400">Folder</span></p>
                     <p class="text-sm text-slate-500 dark:text-slate-500">or drag and drop directory here</p>
                 </div>
                 <input id="folderInput" type="file" class="hidden" webkitdirectory directory multiple />
@@ -186,24 +246,22 @@
 
     <div id="processingSection" class="hidden flex flex-col items-center justify-center py-12 animate-fade-in">
         <div class="relative w-24 h-24 mb-8">
-            <svg class="animate-spin w-full h-full text-blue-200 dark:text-slate-700" viewBox="0 0 24 24">
+            <svg class="animate-spin w-full h-full text-primary-100 dark:text-slate-700" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-                <path class="opacity-75" fill="currentColor" class="text-blue-600 dark:text-blue-500" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor" class="text-primary-600 dark:text-primary-500" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <i class="ph ph-brain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-blue-600 dark:text-blue-500"></i>
+            <i class="ph ph-brain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-primary-600 dark:text-primary-500"></i>
         </div>
         <h3 id="processStatus" class="text-xl font-semibold text-slate-800 dark:text-white mb-2">Reading documents...</h3>
         <p id="processDetail" class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-md text-center">Processing...</p>
-
         <div class="w-full max-w-md bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            <div id="progressBar" class="bg-primary-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
     </div>
 
 
     <div id="quizSection" class="hidden animate-fade-in">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
             <div class="lg:col-span-1 space-y-6">
                 <div class="glass-panel p-6 rounded-2xl shadow-sm">
                     <h3 class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">Progress</h3>
@@ -212,7 +270,7 @@
                         <span class="text-slate-400 dark:text-slate-500 mb-1">/ <span id="totalQuestionNum">10</span></span>
                     </div>
                     <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                        <div id="quizProgressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                        <div id="quizProgressBar" class="bg-primary-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
                     </div>
                 </div>
 
@@ -237,19 +295,14 @@
 
             <div class="lg:col-span-2">
                 <div id="questionCard" class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden relative min-h-[400px]">
-
                     <div class="p-8 border-b border-slate-100 dark:border-slate-800">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold">Multiple Choice</span>
-
+                            <span class="inline-block px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-xs font-bold">Multiple Choice</span>
                             <div id="sourceBadge" class="hidden items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold animate-pulse">
                                 <i class="ph ph-globe"></i> 🌐 Network Knowledge
                             </div>
                         </div>
-
-                        <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-relaxed">
-                            Generating your questions...
-                        </h2>
+                        <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-relaxed">Generating your questions...</h2>
                     </div>
 
                     <div id="optionsContainer" class="p-8 space-y-3"></div>
@@ -263,25 +316,17 @@
                             </div>
                         </div>
                         <div class="mt-6 flex justify-end">
-                            <button id="nextBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-blue-500/30">
-                                Next Question <i class="ph ph-arrow-right ml-2"></i>
-                            </button>
+                            <button id="nextBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-lg shadow-primary-500/30">Next Question <i class="ph ph-arrow-right ml-2"></i></button>
                         </div>
                     </div>
 
                     <div id="resultsView" class="hidden absolute inset-0 bg-white dark:bg-slate-900 z-20 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-                        <div class="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center text-4xl mb-6">
-                            <i class="ph ph-trophy"></i>
-                        </div>
+                        <div class="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full flex items-center justify-center text-4xl mb-6"><i class="ph ph-trophy"></i></div>
                         <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Quiz Complete!</h2>
                         <p class="text-slate-600 dark:text-slate-400 mb-8">Here is how you performed.</p>
-
-                        <div class="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2" id="finalScore">85%</div>
+                        <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2" id="finalScore">85%</div>
                         <p class="text-sm text-slate-400 dark:text-slate-500 mb-8">Accuracy</p>
-
-                        <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/30">
-                            Create New Quiz
-                        </button>
+                        <button onclick="window.location.reload()" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-xl font-bold transition-colors shadow-lg shadow-primary-500/30">Create New Quiz</button>
                     </div>
                 </div>
             </div>
@@ -291,26 +336,20 @@
 
 
 <script>
-    // --- Configuration & State ---
+    // --- State ---
     let apiKey = localStorage.getItem('gemini_api_key') || '';
-    const folderInput = document.getElementById('folderInput');
-    const deepScanToggle = document.getElementById('deepScanToggle');
-
     let quizData = [];
     let currentQuestionIndex = 0;
     let score = { correct: 0, wrong: 0 };
     let extractedTextGlobal = "";
     let difficultyLevel = 'medium';
-    let isDeepScanActive = false; // State to track source
+    let isDeepScanActive = false;
 
-    // --- DOM Elements ---
-    const sections = {
+    // --- DOM ---
+    const els = {
         upload: document.getElementById('uploadSection'),
         processing: document.getElementById('processingSection'),
-        quiz: document.getElementById('quizSection')
-    };
-
-    const els = {
+        quiz: document.getElementById('quizSection'),
         apiKeyModal: document.getElementById('apiKeyModal'),
         apiKeyInput: document.getElementById('apiKeyInput'),
         processStatus: document.getElementById('processStatus'),
@@ -333,109 +372,18 @@
         resumeCard: document.getElementById('resumeCard'),
         resumeInfo: document.getElementById('resumeInfo'),
         resumeBtn: document.getElementById('resumeBtn'),
-        clearDataBtn: document.getElementById('clearDataBtn'),
-        themeToggle: document.getElementById('themeToggle'),
-        themeIcon: document.getElementById('themeIcon'),
-        sourceBadge: document.getElementById('sourceBadge')
+        sourceBadge: document.getElementById('sourceBadge'),
+        qCountInput: document.getElementById('qCountInput'),
+        qCountDisplay: document.getElementById('qCountDisplay'),
+        deepScanToggle: document.getElementById('deepScanToggle'),
+        folderInput: document.getElementById('folderInput')
     };
-
-    // --- Math Rendering (KaTeX) ---
-    function renderMath(text) {
-        // This function replaces $...$ with rendered HTML using KaTeX
-        if (!text) return '';
-
-        // Render block math $$...$$
-        let processed = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
-            try {
-                return katex.renderToString(formula, { displayMode: true, throwOnError: false });
-            } catch (e) { return match; }
-        });
-
-        // Render inline math $...$
-        processed = processed.replace(/\$([^$]+?)\$/g, (match, formula) => {
-            try {
-                return katex.renderToString(formula, { displayMode: false, throwOnError: false });
-            } catch (e) { return match; }
-        });
-
-        return processed;
-    }
-
-    // --- Theme Engine (Night Mode) ---
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            els.themeIcon.classList.replace('ph-moon', 'ph-sun');
-        } else {
-            document.documentElement.classList.remove('dark');
-            els.themeIcon.classList.replace('ph-sun', 'ph-moon');
-        }
-    }
-
-    els.themeToggle.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        const isDark = document.documentElement.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        els.themeIcon.className = isDark ? 'ph ph-sun text-2xl' : 'ph ph-moon text-2xl';
-    });
-
-
-    // --- IndexedDB Logic ---
-    const DB_NAME = 'DocuQuizDB';
-    const STORE_NAME = 'sessions';
-    const SESSION_ID = 'last_session';
-
-    function openDB() {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, 1);
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => resolve(request.result);
-            request.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            };
-        });
-    }
-
-    async function saveSession(text, fileCount, fileNames) {
-        try {
-            const db = await openDB();
-            const tx = db.transaction(STORE_NAME, 'readwrite');
-            await tx.objectStore(STORE_NAME).put({
-                id: SESSION_ID,
-                text: text,
-                fileCount: fileCount,
-                fileNames: fileNames,
-                timestamp: new Date().toISOString()
-            });
-        } catch (err) { console.error("Save failed", err); }
-    }
-
-    async function loadSession() {
-        try {
-            const db = await openDB();
-            return new Promise((resolve) => {
-                const req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(SESSION_ID);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => resolve(null);
-            });
-        } catch (err) { return null; }
-    }
-
-    async function clearSession() {
-        try {
-            const db = await openDB();
-            db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(SESSION_ID);
-            els.resumeCard.classList.add('hidden');
-        } catch (err) { console.error("Clear failed", err); }
-    }
-
 
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', async () => {
-        initTheme();
+        initTheme(); // Restore theme
 
+        // Restore API Key
         if (!apiKey || apiKey === 'GEMINI_API_KEY') {
             els.apiKeyModal.classList.remove('hidden');
             els.apiKeyModal.classList.add('flex');
@@ -443,6 +391,12 @@
             els.apiKeyInput.value = apiKey;
         }
 
+        // Slider Event
+        els.qCountInput.addEventListener('input', (e) => {
+            els.qCountDisplay.textContent = e.target.value;
+        });
+
+        // Restore Session
         const savedData = await loadSession();
         if (savedData && savedData.text) {
             els.resumeCard.classList.remove('hidden');
@@ -457,6 +411,45 @@
         }
     });
 
+    // --- Theme & Appearance Engine ---
+    const themeColors = {
+        blue: { 50: '239 246 255', 100: '219 234 254', 500: '59 130 246', 600: '37 99 235', 700: '29 78 216' },
+        violet: { 50: '245 243 255', 100: '237 233 254', 500: '139 92 246', 600: '124 58 237', 700: '109 40 217' },
+        emerald: { 50: '236 253 245', 100: '209 250 229', 500: '16 185 129', 600: '5 150 105', 700: '4 120 87' },
+        amber: { 50: '255 251 235', 100: '254 243 199', 500: '245 158 11', 600: '217 119 6', 700: '180 83 9' }
+    };
+
+    function initTheme() {
+        // Mode
+        const savedMode = localStorage.getItem('mode');
+        if (savedMode === 'dark' || (!savedMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Color
+        const savedColor = localStorage.getItem('themeColor') || 'blue';
+        setThemeColor(savedColor);
+    }
+
+    window.setMode = (mode) => {
+        if (mode === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+        localStorage.setItem('mode', mode);
+    };
+
+    window.setThemeColor = (colorKey) => {
+        const colors = themeColors[colorKey];
+        if(!colors) return;
+        const root = document.documentElement;
+        Object.keys(colors).forEach(shade => {
+            root.style.setProperty(`--primary-${shade}`, colors[shade]);
+        });
+        localStorage.setItem('themeColor', colorKey);
+    };
+
+    // --- Settings UI ---
     document.getElementById('saveKeyBtn').addEventListener('click', () => {
         const val = els.apiKeyInput.value.trim();
         if (val) {
@@ -467,17 +460,15 @@
         } else alert('Please enter a valid API key');
     });
 
-    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-        if(apiKey && apiKey !== 'GEMINI_API_KEY') {
-            els.apiKeyModal.classList.add('hidden');
-            els.apiKeyModal.classList.remove('flex');
-        } else alert("API Key required.");
-    });
-
     document.getElementById('settingsBtn').addEventListener('click', () => {
         els.apiKeyModal.classList.remove('hidden');
         els.apiKeyModal.classList.add('flex');
         els.apiKeyInput.value = apiKey;
+    });
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+        els.apiKeyModal.classList.add('hidden');
+        els.apiKeyModal.classList.remove('flex');
     });
 
     document.getElementById('clearDataBtn').addEventListener('click', async () => {
@@ -489,24 +480,23 @@
     });
 
 
-    // --- Difficulty & UI Logic ---
-    function setDifficulty(level) {
+    // --- Difficulty UI ---
+    window.setDifficulty = (level) => {
         difficultyLevel = level;
-        ['Easy', 'Medium', 'Hard'].forEach(btn => {
+        ['Easy', 'Medium', 'Hard', 'Mixed'].forEach(btn => {
             const el = document.getElementById(`btn${btn}`);
             const isSelected = btn.toLowerCase() === level;
-            // Updated for dark mode styles in JS
             if (isSelected) {
-                el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400 transition-all transform scale-105';
+                el.className = 'flex-1 py-2 text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-primary-600 dark:text-primary-500 transition-all rounded-lg scale-105';
             } else {
-                el.className = 'flex-1 py-2 px-4 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all';
+                el.className = 'flex-1 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all rounded-lg';
             }
         });
-    }
+    };
 
 
-    // --- File Handling ---
-    folderInput.addEventListener('change', async (e) => {
+    // --- File Handling & AI ---
+    els.folderInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
         if (files.length === 0) return alert("No PDF files found.");
 
@@ -521,11 +511,8 @@
                 extractedTextGlobal += `\n--- Document: ${files[i].name} ---\n${text}`;
                 processedCount++;
             }
-
             if (extractedTextGlobal.length > 1000000) extractedTextGlobal = extractedTextGlobal.substring(0, 1000000);
             await saveSession(extractedTextGlobal, processedCount, files.map(f => f.name));
-
-            // Generate
             await generateQuestions(extractedTextGlobal);
 
         } catch (error) {
@@ -547,46 +534,38 @@
         return fullText;
     }
 
-
-    // --- THE "DEEP SCAN" AI ALGORITHM ---
     async function generateQuestions(contextText) {
-        const isDeepScan = deepScanToggle.checked;
-        isDeepScanActive = isDeepScan; // Update global state
+        const isDeepScan = els.deepScanToggle.checked;
+        const qCount = els.qCountInput.value;
+        isDeepScanActive = isDeepScan;
 
-        updateStatus(isDeepScan ? "Performing Deep Concept Scan..." : "Generating Questions...", "Consulting Gemini AI...", 75);
+        updateStatus(isDeepScan ? "Performing Deep Concept Scan..." : "Generating Questions...", `Consulting Gemini AI (${qCount} Qs)...`, 75);
 
-        // 1. Base instructions
-        let promptIntro = `You are an expert professor. Generate 10 high-quality multiple-choice questions based on the provided text.`;
+        let promptIntro = `You are an expert professor. Generate ${qCount} high-quality multiple-choice questions based on the provided text.`;
 
-        // 2. The "Algorithm" (Prompt Engineering)
         if (isDeepScan) {
             promptIntro += `
-
-            **ALGORITHM MODE: INTERNET KNOWLEDGE EXPANSION**
-            1. Analyze the provided text ONLY to identify the *topics*, *subjects*, and *difficulty level* (e.g., if the text implies 'Stoichiometry' or 'Polyatomic Ions', note that).
-            2. IGNORE the specific sentences/facts in the document for the questions.
-            3. Instead, use your internal knowledge base to generate NEW, standard academic questions related to these topics.
-            4. The goal is to provide "Internet-sourced" style questions that expand the user's study material beyond the file provided.
+            **MODE: INTERNET KNOWLEDGE EXPANSION**
+            1. Analyze text for topics/subjects only.
+            2. IGNORE specific file details.
+            3. Generate NEW, standard academic questions using your internal knowledge.
             `;
         } else {
             promptIntro += `
-            **ALGORITHM MODE: STRICT TEXT ADHERENCE**
+            **MODE: STRICT TEXT ADHERENCE**
             1. Generate questions strictly based on the provided text.
-            2. Do not introduce outside concepts not mentioned in the documents.
             `;
         }
 
-        // 3. Difficulty modifiers
         if (difficultyLevel === 'easy') promptIntro += " Focus on definitions and basic recall.";
-        else if (difficultyLevel === 'medium') promptIntro += " Focus on application and comparison of ideas.";
-        else promptIntro += " Focus on complex analysis, synthesis, and multi-step reasoning.";
+        else if (difficultyLevel === 'medium') promptIntro += " Focus on application and comparison.";
+        else if (difficultyLevel === 'hard') promptIntro += " Focus on complex analysis and synthesis.";
+        else if (difficultyLevel === 'mixed') promptIntro += " Generate a varied mix of Easy (Recall), Medium (Application), and Hard (Analysis) questions.";
 
         const prompt = `
             ${promptIntro}
-
             Format output strictly as a JSON array of objects.
-            Use LaTeX formatting for any math or chemistry formulas. Enclose all LaTeX in single dollar signs like $H_2O$ or $x^2$.
-            Do NOT use markdown code blocks.
+            Use LaTeX for math enclosed in single dollar signs ($x^2$).
 
             JSON Schema:
             [{
@@ -604,7 +583,6 @@
             try {
                 const currentKey = apiKey || localStorage.getItem('gemini_api_key');
                 if(!currentKey) throw new Error("API Key missing");
-
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${currentKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -613,7 +591,6 @@
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
-
                 if (!response.ok) {
                     if ((response.status === 429 || response.status >= 500) && retryCount < 5) {
                         await new Promise(r => setTimeout(r, Math.pow(2, retryCount) * 1000));
@@ -634,9 +611,7 @@
         try {
             const data = await makeRequest();
             if (!data.candidates || !data.candidates[0].content) throw new Error("Empty response");
-
-            let rawText = data.candidates[0].content.parts[0].text;
-            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            let rawText = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
             quizData = JSON.parse(rawText);
 
             updateStatus("Ready!", "Quiz generated", 100);
@@ -647,7 +622,6 @@
             switchSection('upload');
         }
     }
-
 
     // --- Quiz Engine ---
     function startQuiz() {
@@ -664,7 +638,6 @@
         els.totalQuestionNum.textContent = quizData.length;
         els.quizProgressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
 
-        // Handle Source Badge
         if(isDeepScanActive) {
             els.sourceBadge.classList.remove('hidden');
             els.sourceBadge.classList.add('flex');
@@ -673,28 +646,21 @@
             els.sourceBadge.classList.remove('flex');
         }
 
-        // Render Question with Math Support
         els.questionText.innerHTML = renderMath(q.question);
-
         els.optionsContainer.innerHTML = '';
         els.feedbackOverlay.classList.add('hidden');
 
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
-            btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all group relative overflow-hidden`;
+            btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 hover:border-primary-200 dark:hover:border-primary-700 hover:bg-primary-50 dark:hover:bg-slate-800 transition-all group relative overflow-hidden`;
             btn.onclick = () => handleAnswer(idx);
 
-            // Render Option Text with Math Support
             const renderedOpt = renderMath(opt);
-
             btn.innerHTML = `
-                    <div class="flex items-center gap-3 relative z-10">
-                        <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 font-bold text-sm group-hover:bg-white dark:group-hover:bg-slate-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            ${String.fromCharCode(65 + idx)}
-                        </span>
-                        <span class="text-slate-700 dark:text-slate-200 font-medium">${renderedOpt}</span>
-                    </div>
-                `;
+                <div class="flex items-center gap-3 relative z-10">
+                    <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 font-bold text-sm group-hover:bg-white dark:group-hover:bg-slate-600 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">${String.fromCharCode(65 + idx)}</span>
+                    <span class="text-slate-700 dark:text-slate-200 font-medium">${renderedOpt}</span>
+                </div>`;
             els.optionsContainer.appendChild(btn);
         });
     }
@@ -704,7 +670,6 @@
         const isCorrect = selectedIndex === q.correctAnswer;
         const buttons = els.optionsContainer.querySelectorAll('button');
         buttons.forEach(btn => btn.disabled = true);
-
         buttons[selectedIndex].classList.remove('border-slate-100', 'dark:border-slate-800');
 
         if (isCorrect) {
@@ -713,7 +678,6 @@
             showFeedback(true, "Correct!", q.explanation);
         } else {
             buttons[selectedIndex].className = `w-full text-left p-4 rounded-xl border-2 border-red-500 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200`;
-            // Highlight correct one
             buttons[q.correctAnswer].className = `w-full text-left p-4 rounded-xl border-2 border-green-500 bg-green-50 dark:bg-green-900/10 text-slate-500 dark:text-slate-400 opacity-70`;
             score.wrong++;
             showFeedback(false, "Incorrect", q.explanation);
@@ -723,30 +687,37 @@
 
     function showFeedback(isCorrect, title, text) {
         els.feedbackOverlay.classList.remove('hidden');
-
-        // Render Explanation Math
-        const renderedExplanation = renderMath(text);
-
         els.feedbackTitle.textContent = title;
         els.feedbackTitle.className = isCorrect ? "font-bold text-lg mb-1 text-green-700 dark:text-green-400" : "font-bold text-lg mb-1 text-red-700 dark:text-red-400";
-        els.feedbackText.innerHTML = renderedExplanation;
-        els.feedbackIcon.innerHTML = isCorrect
-            ? '<i class="ph ph-check-circle text-green-600 dark:text-green-500"></i>'
-            : '<i class="ph ph-x-circle text-red-600 dark:text-red-500"></i>';
+        els.feedbackText.innerHTML = renderMath(text);
+        els.feedbackIcon.innerHTML = isCorrect ? '<i class="ph ph-check-circle text-green-600 dark:text-green-500"></i>' : '<i class="ph ph-x-circle text-red-600 dark:text-red-500"></i>';
         els.feedbackOverlay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     els.nextBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         if (currentQuestionIndex < quizData.length) renderQuestion();
-        else showResults();
+        else {
+            els.quizSection.classList.add('hidden');
+            els.upload.classList.add('hidden'); // Ensure upload hidden
+            els.quiz.classList.remove('hidden'); // Keep quiz container for results
+
+            // Specifically hide the grid inside quiz section
+            els.quiz.querySelector('.grid').classList.add('hidden');
+
+            // Show result view
+            els.resultsView.classList.remove('hidden');
+            els.resultsView.classList.add('flex');
+
+            // Re-calc score just in case
+            const percentage = Math.round((score.correct / quizData.length) * 100);
+            els.finalScore.textContent = `${percentage}%`;
+        }
     });
 
+    // Fix Result View Logic
     function showResults() {
-        els.resultsView.classList.remove('hidden');
-        els.resultsView.classList.add('flex');
-        const percentage = Math.round((score.correct / quizData.length) * 100);
-        els.finalScore.textContent = `${percentage}%`;
+        // Handled in NextBtn listener above for simplicity in single-file structure
     }
 
     function updateScoreBoard() {
@@ -755,8 +726,16 @@
     }
 
     function switchSection(id) {
-        Object.values(sections).forEach(el => el.classList.add('hidden'));
-        sections[id].classList.remove('hidden');
+        // Reset specific visibility hacks
+        if(id === 'quiz') els.quiz.querySelector('.grid').classList.remove('hidden');
+
+        els.upload.classList.add('hidden');
+        els.processing.classList.add('hidden');
+        els.quiz.classList.add('hidden');
+
+        if(id === 'upload') els.upload.classList.remove('hidden');
+        if(id === 'processing') els.processing.classList.remove('hidden');
+        if(id === 'quiz') els.quiz.classList.remove('hidden');
     }
 
     function updateStatus(title, detail, progress) {
@@ -764,6 +743,31 @@
         els.processDetail.textContent = detail;
         els.progressBar.style.width = `${progress}%`;
     }
+
+    // --- Utils ---
+    function renderMath(text) {
+        if (!text) return '';
+        let processed = text.replace(/\$\$([\s\S]+?)\$\$/g, (m, f) => {
+            try { return katex.renderToString(f, { displayMode: true, throwOnError: false }); } catch(e){return m;}
+        });
+        processed = processed.replace(/\$([^$]+?)\$/g, (m, f) => {
+            try { return katex.renderToString(f, { displayMode: false, throwOnError: false }); } catch(e){return m;}
+        });
+        return processed;
+    }
+
+    // --- DB Logic ---
+    const DB_NAME = 'DocuQuizDB'; const STORE_NAME = 'sessions'; const SESSION_ID = 'last_session';
+    function openDB() { return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (e) => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' }); };
+    });}
+    async function saveSession(text, fileCount, fileNames) { try { const db = await openDB(); const tx = db.transaction(STORE_NAME, 'readwrite'); await tx.objectStore(STORE_NAME).put({ id: SESSION_ID, text: text, fileCount: fileCount, fileNames: fileNames, timestamp: new Date().toISOString() }); } catch (err) { console.error("Save failed", err); }}
+    async function loadSession() { try { const db = await openDB(); return new Promise((resolve) => { const req = db.transaction(STORE_NAME, 'readonly').objectStore(STORE_NAME).get(SESSION_ID); req.onsuccess = () => resolve(req.result); req.onerror = () => resolve(null); }); } catch (err) { return null; }}
+    async function clearSession() { try { const db = await openDB(); db.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(SESSION_ID); els.resumeCard.classList.add('hidden'); } catch (err) { console.error("Clear failed", err); }}
+
 </script>
 </body>
 </html>
