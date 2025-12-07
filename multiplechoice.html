@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini PDF Quiz Generator v2</title>
+    <title>Gemini PDF Quiz Generator v3</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,21 +12,24 @@
             theme: {
                 extend: {
                     colors: {
-                        slate: {
-                            850: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
-                        }
+                        slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' }
                     }
                 }
             }
         }
     </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
@@ -51,13 +55,11 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* Toggle Switch CSS */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #3b82f6;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #3b82f6;
-        }
+        .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
+
+        /* Math formatting fixes */
+        .katex { font-size: 1.1em; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
@@ -70,7 +72,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-xl leading-tight">DocuQuiz AI</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Deep Scan & Dark Mode Enabled</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Deep Scan & Math Support Active</p>
             </div>
         </div>
 
@@ -135,14 +137,19 @@
                 </div>
             </div>
 
-            <div class="max-w-md mx-auto mb-8 flex items-center justify-center gap-3">
-                <div class="relative inline-block w-10 h-6 align-middle select-none transition duration-200 ease-in">
+            <div class="max-w-xl mx-auto mb-8 flex items-center justify-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="relative inline-block w-12 h-6 align-middle select-none transition duration-200 ease-in">
                     <input type="checkbox" name="toggle" id="deepScanToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 dark:border-slate-600 appearance-none cursor-pointer transition-all duration-300"/>
                     <label for="deepScanToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer transition-colors duration-300"></label>
                 </div>
-                <label for="deepScanToggle" class="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-                    Enable Deep Concept Scan <span class="text-blue-500 text-xs ml-1">(Slower, Smarter)</span>
-                </label>
+                <div class="text-left">
+                    <label for="deepScanToggle" class="text-sm font-bold text-slate-800 dark:text-slate-200 cursor-pointer select-none block">
+                        Enable "Internet Knowledge" Expansion
+                    </label>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Uses uploaded files as a <b>topic guide only</b>, then finds new questions online.
+                    </p>
+                </div>
             </div>
 
             <div id="resumeCard" class="hidden max-w-2xl mx-auto mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex items-center justify-between animate-fade-in">
@@ -232,7 +239,14 @@
                 <div id="questionCard" class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden relative min-h-[400px]">
 
                     <div class="p-8 border-b border-slate-100 dark:border-slate-800">
-                        <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold mb-4">Multiple Choice</span>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold">Multiple Choice</span>
+
+                            <div id="sourceBadge" class="hidden items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-bold animate-pulse">
+                                <i class="ph ph-globe"></i> 🌐 Network Knowledge
+                            </div>
+                        </div>
+
                         <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-relaxed">
                             Generating your questions...
                         </h2>
@@ -287,6 +301,7 @@
     let score = { correct: 0, wrong: 0 };
     let extractedTextGlobal = "";
     let difficultyLevel = 'medium';
+    let isDeepScanActive = false; // State to track source
 
     // --- DOM Elements ---
     const sections = {
@@ -320,8 +335,31 @@
         resumeBtn: document.getElementById('resumeBtn'),
         clearDataBtn: document.getElementById('clearDataBtn'),
         themeToggle: document.getElementById('themeToggle'),
-        themeIcon: document.getElementById('themeIcon')
+        themeIcon: document.getElementById('themeIcon'),
+        sourceBadge: document.getElementById('sourceBadge')
     };
+
+    // --- Math Rendering (KaTeX) ---
+    function renderMath(text) {
+        // This function replaces $...$ with rendered HTML using KaTeX
+        if (!text) return '';
+
+        // Render block math $$...$$
+        let processed = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
+            try {
+                return katex.renderToString(formula, { displayMode: true, throwOnError: false });
+            } catch (e) { return match; }
+        });
+
+        // Render inline math $...$
+        processed = processed.replace(/\$([^$]+?)\$/g, (match, formula) => {
+            try {
+                return katex.renderToString(formula, { displayMode: false, throwOnError: false });
+            } catch (e) { return match; }
+        });
+
+        return processed;
+    }
 
     // --- Theme Engine (Night Mode) ---
     function initTheme() {
@@ -513,6 +551,8 @@
     // --- THE "DEEP SCAN" AI ALGORITHM ---
     async function generateQuestions(contextText) {
         const isDeepScan = deepScanToggle.checked;
+        isDeepScanActive = isDeepScan; // Update global state
+
         updateStatus(isDeepScan ? "Performing Deep Concept Scan..." : "Generating Questions...", "Consulting Gemini AI...", 75);
 
         // 1. Base instructions
@@ -522,11 +562,11 @@
         if (isDeepScan) {
             promptIntro += `
 
-            **ALGORITHM MODE: DEEP CONCEPT SCAN**
-            1. First, ANALYZE the provided text to identify the core academic subjects and key principles (e.g., if the text implies 'Thermodynamics', recognize that).
-            2. ACCESS your internal knowledge base regarding these identified subjects to look up related standard curriculum questions and facts.
-            3. GENERATE questions that bridge the specific details in the PDF with broader, fundamental mastery of the topic.
-            4. The questions should test if the student truly understands the CONCEPT, not just if they can find the word in the text.
+            **ALGORITHM MODE: INTERNET KNOWLEDGE EXPANSION**
+            1. Analyze the provided text ONLY to identify the *topics*, *subjects*, and *difficulty level* (e.g., if the text implies 'Stoichiometry' or 'Polyatomic Ions', note that).
+            2. IGNORE the specific sentences/facts in the document for the questions.
+            3. Instead, use your internal knowledge base to generate NEW, standard academic questions related to these topics.
+            4. The goal is to provide "Internet-sourced" style questions that expand the user's study material beyond the file provided.
             `;
         } else {
             promptIntro += `
@@ -545,7 +585,8 @@
             ${promptIntro}
 
             Format output strictly as a JSON array of objects.
-            Use UNICODE for math (², π, →, √). No LaTeX.
+            Use LaTeX formatting for any math or chemistry formulas. Enclose all LaTeX in single dollar signs like $H_2O$ or $x^2$.
+            Do NOT use markdown code blocks.
 
             JSON Schema:
             [{
@@ -623,7 +664,18 @@
         els.totalQuestionNum.textContent = quizData.length;
         els.quizProgressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
 
-        els.questionText.textContent = q.question;
+        // Handle Source Badge
+        if(isDeepScanActive) {
+            els.sourceBadge.classList.remove('hidden');
+            els.sourceBadge.classList.add('flex');
+        } else {
+            els.sourceBadge.classList.add('hidden');
+            els.sourceBadge.classList.remove('flex');
+        }
+
+        // Render Question with Math Support
+        els.questionText.innerHTML = renderMath(q.question);
+
         els.optionsContainer.innerHTML = '';
         els.feedbackOverlay.classList.add('hidden');
 
@@ -631,12 +683,16 @@
             const btn = document.createElement('button');
             btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all group relative overflow-hidden`;
             btn.onclick = () => handleAnswer(idx);
+
+            // Render Option Text with Math Support
+            const renderedOpt = renderMath(opt);
+
             btn.innerHTML = `
                     <div class="flex items-center gap-3 relative z-10">
                         <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 font-bold text-sm group-hover:bg-white dark:group-hover:bg-slate-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             ${String.fromCharCode(65 + idx)}
                         </span>
-                        <span class="text-slate-700 dark:text-slate-200 font-medium">${opt}</span>
+                        <span class="text-slate-700 dark:text-slate-200 font-medium">${renderedOpt}</span>
                     </div>
                 `;
             els.optionsContainer.appendChild(btn);
@@ -667,9 +723,13 @@
 
     function showFeedback(isCorrect, title, text) {
         els.feedbackOverlay.classList.remove('hidden');
+
+        // Render Explanation Math
+        const renderedExplanation = renderMath(text);
+
         els.feedbackTitle.textContent = title;
         els.feedbackTitle.className = isCorrect ? "font-bold text-lg mb-1 text-green-700 dark:text-green-400" : "font-bold text-lg mb-1 text-red-700 dark:text-red-400";
-        els.feedbackText.textContent = text;
+        els.feedbackText.innerHTML = renderedExplanation;
         els.feedbackIcon.innerHTML = isCorrect
             ? '<i class="ph ph-check-circle text-green-600 dark:text-green-500"></i>'
             : '<i class="ph ph-x-circle text-red-600 dark:text-red-500"></i>';
