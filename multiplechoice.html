@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini PDF Quiz Generator v4</title>
+    <title>Gemini PDF Quiz Generator v4.1</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -125,19 +125,21 @@
                     <i class="ph ph-palette text-2xl"></i>
                 </button>
 
-                <div class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 hidden group-hover:block hover:block z-50 animate-fade-in">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Color Theme</h3>
-                    <div class="flex justify-between gap-2 mb-4">
-                        <button onclick="setThemeColor('blue')" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-blue-400"></button>
-                        <button onclick="setThemeColor('violet')" class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-violet-400"></button>
-                        <button onclick="setThemeColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-emerald-400"></button>
-                        <button onclick="setThemeColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-amber-400"></button>
-                    </div>
+                <div class="absolute right-0 pt-2 w-64 hidden group-hover:block hover:block z-50 animate-fade-in">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Color Theme</h3>
+                        <div class="flex justify-between gap-2 mb-4">
+                            <button onclick="setThemeColor('blue')" class="w-8 h-8 rounded-full bg-blue-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-blue-400"></button>
+                            <button onclick="setThemeColor('violet')" class="w-8 h-8 rounded-full bg-violet-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-violet-400"></button>
+                            <button onclick="setThemeColor('emerald')" class="w-8 h-8 rounded-full bg-emerald-600 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-emerald-400"></button>
+                            <button onclick="setThemeColor('amber')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-transparent hover:scale-110 transition-transform focus:ring-2 ring-offset-2 ring-amber-400"></button>
+                        </div>
 
-                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Mode</h3>
-                    <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                        <button onclick="setMode('light')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Light</button>
-                        <button onclick="setMode('dark')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Dark</button>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Mode</h3>
+                        <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                            <button onclick="setMode('light')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Light</button>
+                            <button onclick="setMode('dark')" class="flex-1 py-1.5 text-xs font-medium rounded-md hover:bg-white dark:hover:bg-slate-700 shadow-sm transition-all text-slate-600 dark:text-slate-300">Dark</button>
+                        </div>
                     </div>
                 </div>
             </div>
