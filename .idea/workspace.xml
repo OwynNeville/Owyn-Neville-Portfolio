@@ -121,7 +121,7 @@
       <workItem from="1764965067403" duration="494000" />
       <workItem from="1764965572105" duration="2958000" />
       <workItem from="1764978796984" duration="109000" />
-      <workItem from="1765127272442" duration="2136000" />
+      <workItem from="1765127272442" duration="3230000" />
     </task>
     <task id="LOCAL-00001" summary="adding to repository">
       <option name="closed" value="true" />
@@ -419,7 +419,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765128745842</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="-new resume&#10;-redid text and sizing&#10;-misc">
+      <option name="closed" value="true" />
+      <created>1765129526795</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1765129526795</updated>
+    </task>
+    <task id="LOCAL-00039" summary="-new resume&#10;-redid text and sizing&#10;-misc">
+      <option name="closed" value="true" />
+      <created>1765129749150</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1765129749150</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
